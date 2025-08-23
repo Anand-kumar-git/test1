@@ -1,14 +1,15 @@
-# Use official Nginx image
+# Stage 1: Build React app
+FROM node:18 AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
-
-# Remove the default nginx index page
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy build folder contents into nginx html directory
-COPY build/ /usr/share/nginx/html/
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
-
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
