@@ -17,11 +17,7 @@ pipeline {
             }
         }
 
-<<<<<<< HEAD
-        stage('Build Docker Imge') {
-=======
         stage('Build Docker Image') {
->>>>>>> db76a71a2c1b2124a0ef0c9e0eaaffd5ff98c7c2
             steps {
                 script {
                     sh 'chmod +x build.sh'
@@ -46,11 +42,7 @@ pipeline {
             }
         }
 
-<<<<<<< HEAD
         stage('Push Docker Image') {
-=======
-        stage('Push Docker Imag') {
->>>>>>> db76a71a2c1b2124a0ef0c9e0eaaffd5ff98c7c2
             steps {
                 script {
                     if (env.BRANCH_NAME == "dev") {
