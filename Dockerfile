@@ -1,14 +1,11 @@
-# Use official Nginx as base image
+# Use official Nginx image
 FROM nginx:alpine
 
-# Set working directory inside container
-WORKDIR /usr/share/nginx/html
+# Remove the default nginx index page
+RUN rm -rf /usr/share/nginx/html/*
 
-# Remove default nginx static files
-RUN rm -rf ./*
-
-# Copy build files (index.html, static, manifest.json, etc.)
-COPY . .
+# Copy build folder contents into nginx html directory
+COPY build/ /usr/share/nginx/html/
 
 # Expose port 80
 EXPOSE 80
