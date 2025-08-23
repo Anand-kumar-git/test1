@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Imge') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     if (env.BRANCH_NAME == "dev") {
