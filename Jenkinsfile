@@ -5,19 +5,18 @@ pipeline {
         DEV_REPO = "anand20003/dev"
         PROD_REPO = "anand20003/prod"
         IMAGE_TAG = "latest"
-        BRANCH_NAME = "dev"   // change this to "main" when building main branch
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 checkout([$class: 'GitSCM',
-                          branches: [[name: "*/${BRANCH_NAME}"]],
+                          branches: [[name: "*/${env.BRANCH_NAME}"]],
                           userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
             }
         }
 
-        stage('Build Docker Imge') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
@@ -27,6 +26,8 @@ pipeline {
                         sh "docker tag static-web $DEV_REPO:$IMAGE_TAG"
                     } else if (env.BRANCH_NAME == "main") {
                         sh "docker tag static-web $PROD_REPO:$IMAGE_TAG"
+                    } else {
+                        error "Branch ${env.BRANCH_NAME} is not supported for Docker push"
                     }
                 }
             }
