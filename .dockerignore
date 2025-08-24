@@ -1,1 +1,12 @@
-*.yaml
+# Ignore everything by default
+**
+
+# Allow build output
+!build/**
+
+# But don’t send .git, docker files, or Jenkins files
+.git
+.gitignore
+Dockerfile
+Jenkinsfile
+*.sh

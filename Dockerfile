@@ -1,14 +1,12 @@
-# Use Nginx only (no node build needed)
 FROM nginx:alpine
 
-# Remove default nginx html content
+# Remove default nginx files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the build output into Nginx html directory
+# Copy only the build output
 COPY build/ /usr/share/nginx/html/
 
-# Expose port 80
+# Expose port
 EXPOSE 80
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
