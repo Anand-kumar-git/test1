@@ -1,6 +1,9 @@
 Dockerfile
 Jenkinsfile
-*.git
-node_modules
+build.sh
+deploy.sh
+.dockerignore
+.git
+.gitignore
 *.yml
 *.yaml
