@@ -1,12 +1,10 @@
 FROM nginx:alpine
 
-# Remove default nginx static assets
+# Clear default nginx html
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy *contents* of build folder into Nginx html directory
+# Copy only the *contents* of build folder into nginx html
 COPY build/ /usr/share/nginx/html/
 
-# Expose port 80
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
