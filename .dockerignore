@@ -1,1 +1,7 @@
+Jenkinsfile
+node_modules 
+*.git 
 *.yaml
+*.yml 
+.dockerignore
+.gitignore

@@ -1,15 +1,14 @@
-# Stage 1: Build React ap
-FROM node:18 AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Stage 2: Serve with Nginx
+# Use Nginx as base
 FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy pre-built React build folder
+COPY build/ /usr/share/nginx/html/
 
 # Expose port 80
 EXPOSE 80
+
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
