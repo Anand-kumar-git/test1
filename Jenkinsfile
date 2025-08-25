@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Imag') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
