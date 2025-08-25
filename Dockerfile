@@ -1,7 +1,9 @@
 FROM nginx:alpine
 
-# Copy build folder & nginx config
-COPY . /usr/share/nginx/html/
+# Copy only the build folder
+COPY build/ /usr/share/nginx/html/build/
+
+# Copy our custom nginx config
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
