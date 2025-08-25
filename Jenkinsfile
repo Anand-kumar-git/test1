@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DEV_REPO = "anand20003/dev"
-        PROD_REPO = "anand20003/prod"
-        IMAGE_TAG = "latest"
+        DEV_REPO   = "anand20003/dev"
+        PROD_REPO  = "anand20003/prod"
+        IMAGE_TAG  = "latest"
     }
 
     stages {
@@ -16,7 +16,22 @@ pipeline {
             }
         }
 
-        stage('Build Docker Imag') {
+        stage('Build React App') {
+            steps {
+                script {
+                    sh '''
+                        echo "Installing dependencies..."
+                        npm install
+                        echo "Building React app..."
+                        npm run build
+                        echo "Build complete. Checking contents..."
+                        ls -l build
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
