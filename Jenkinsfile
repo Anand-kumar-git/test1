@@ -20,20 +20,18 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "=== Installing Node.js dependencies ==="
+                        echo "Installing dependencies..."
                         npm install
-                        
-                        echo "=== Building React app ==="
+                        echo "Building React app..."
                         npm run build
-                        
-                        echo "=== Build contents ==="
+                        echo "Build complete. Checking contents..."
                         ls -l build
                     '''
                 }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Imge') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
@@ -44,7 +42,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == "main") {
                         sh "docker tag static-web $PROD_REPO:$IMAGE_TAG"
                     } else {
-                        error "❌ Branch ${env.BRANCH_NAME} is not supported for Docker push"
+                        error "Branch ${env.BRANCH_NAME} is not supported for Docker push"
                     }
                 }
             }
@@ -79,15 +77,6 @@ pipeline {
                     sh './deploy.sh'
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Pipeline completed successfully!"
-        }
-        failure {
-            echo "❌ Pipeline failed. Check logs."
         }
     }
 }
