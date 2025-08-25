@@ -8,19 +8,37 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                checkout scm
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "*/${env.BRANCH_NAME}"]],
+                          userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Imag') {
             steps {
                 script {
-                    def repo = (env.BRANCH_NAME == "main") ? PROD_REPO : DEV_REPO
-                    sh """
-                        docker build -t ${repo}:${IMAGE_TAG} .
-                    """
+                    sh 'chmod +x build.sh'
+                    sh './build.sh'
+
+                    if (env.BRANCH_NAME == "dev") {
+                        sh "docker tag static-web $DEV_REPO:$IMAGE_TAG"
+                    } else if (env.BRANCH_NAME == "main") {
+                        sh "docker tag static-web $PROD_REPO:$IMAGE_TAG"
+                    } else {
+                        error "Branch ${env.BRANCH_NAME} is not supported for Docker push"
+                    }
+                }
+            }
+        }
+
+        stage('Login to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Docker-Hub',
+                                                  usernameVariable: 'DOCKER_USER',
+                                                  passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                 }
             }
         }
@@ -28,22 +46,20 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    def repo = (env.BRANCH_NAME == "main") ? PROD_REPO : DEV_REPO
-                    sh """
-                        echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
-                        docker push ${repo}:${IMAGE_TAG}
-                    """
+                    if (env.BRANCH_NAME == "dev") {
+                        sh "docker push $DEV_REPO:$IMAGE_TAG"
+                    } else if (env.BRANCH_NAME == "main") {
+                        sh "docker push $PROD_REPO:$IMAGE_TAG"
+                    }
                 }
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy to AWS') {
             steps {
                 script {
-                    sh """
-                        docker rm -f static_application || true
-                        docker run -d -p 9091:80 --name static_application ${ (env.BRANCH_NAME == "main") ? PROD_REPO : DEV_REPO }:${IMAGE_TAG}
-                    """
+                    sh 'chmod +x deploy.sh'
+                    sh './deploy.sh'
                 }
             }
         }
