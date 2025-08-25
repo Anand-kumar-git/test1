@@ -8,17 +8,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout React App') {
             steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: "*/${env.BRANCH_NAME}"]],
-                          userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
+                dir('app') {
+                    git branch: "${env.BRANCH_NAME}",
+                        url: 'https://github.com/Anand-kumar-git/test.git'
+                }
             }
         }
 
         stage('Build React App') {
             steps {
-                script {
+                dir('app') {
                     sh '''
                         echo "Installing dependencies..."
                         npm install
@@ -31,11 +32,11 @@ pipeline {
             }
         }
 
-        stage('Build Docker Imge') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'chmod +x build.sh'
-                    sh './build.sh'
+                    sh 'chmod +x app/build.sh'
+                    sh './app/build.sh'
 
                     if (env.BRANCH_NAME == "dev") {
                         sh "docker tag static-web $DEV_REPO:$IMAGE_TAG"
@@ -73,8 +74,8 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    sh 'chmod +x deploy.sh'
-                    sh './deploy.sh'
+                    sh 'chmod +x app/deploy.sh'
+                    sh './app/deploy.sh'
                 }
             }
         }
