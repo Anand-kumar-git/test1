@@ -5,7 +5,6 @@ pipeline {
         DEV_REPO = "anand20003/dev"
         PROD_REPO = "anand20003/prod"
         IMAGE_TAG = "latest"
-        BRANCH_NAME = "dev"   // change this to "main" when building main branch
     }
 
     stages {
@@ -17,24 +16,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: "*/${BRANCH_NAME}"]],
-                          userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
-            }
-        }
-
-        stage('Build React App') {
-            steps {
-                script {
-                    sh '''
-                        echo "Installing dependencies..."
-                        npm install
-                        echo "Building React app..."
-                        npm run build
-                        echo "Build complete. Checking contents..."
-                        ls -l build
-                    '''
-                }
+                checkout scm
             }
         }
 
@@ -48,14 +30,12 @@ pipeline {
                         sh "docker tag static-web $DEV_REPO:$IMAGE_TAG"
                     } else if (env.BRANCH_NAME == "main") {
                         sh "docker tag static-web $PROD_REPO:$IMAGE_TAG"
-                    } else {
-                        error "Branch ${env.BRANCH_NAME} is not supported for Docker push"
                     }
                 }
             }
         }
 
-        stage('Login To DockerHub') {
+        stage('Login to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Docker-Hub',
                                                   usernameVariable: 'DOCKER_USER',
