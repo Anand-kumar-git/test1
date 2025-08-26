@@ -5,19 +5,22 @@ pipeline {
         DEV_REPO = "anand20003/dev"
         PROD_REPO = "anand20003/prod"
         IMAGE_TAG = "latest"
-        BRANCH_NAME = "dev"   // change this to "main" when building main branch
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Cleanup Workspace') {
             steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: "*/${BRANCH_NAME}"]],
-                          userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
+                deleteDir()
             }
         }
 
-        stage('Build Docker Imge') {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
