@@ -54,7 +54,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS') {
+        stage('Deploy To AWS') {
             steps {
                 script {
                     sh 'chmod +x deploy.sh'
