@@ -2,16 +2,23 @@ pipeline {
     agent any
 
     environment {
-        DEV_REPO   = "anand20003/dev"
-        PROD_REPO  = "anand20003/prod"
-        IMAGE_TAG  = "latest"
+        DEV_REPO = "anand20003/dev"
+        PROD_REPO = "anand20003/prod"
+        IMAGE_TAG = "latest"
+        BRANCH_NAME = "dev"   // change this to "main" when building main branch
     }
 
     stages {
+        stage('Cleanup Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout Code') {
             steps {
                 checkout([$class: 'GitSCM',
-                          branches: [[name: "*/${env.BRANCH_NAME}"]],
+                          branches: [[name: "*/${BRANCH_NAME}"]],
                           userRemoteConfigs: [[url: 'https://github.com/Anand-kumar-git/test.git']]])
             }
         }
@@ -31,7 +38,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Imge') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh 'chmod +x build.sh'
@@ -48,7 +55,7 @@ pipeline {
             }
         }
 
-        stage('Login to DockerHub') {
+        stage('Login To DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Docker-Hub',
                                                   usernameVariable: 'DOCKER_USER',
@@ -70,7 +77,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS') {
+        stage('Deploy To AWS') {
             steps {
                 script {
                     sh 'chmod +x deploy.sh'
